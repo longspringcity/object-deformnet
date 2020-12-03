@@ -97,6 +97,7 @@ def uniform_sample(vertices, faces, n_samples, with_normal=False):
     """
     sampled_points = np.zeros((n_samples, 3), dtype=float)
     normals = np.zeros((n_samples, 3), dtype=float)
+    print(faces)
     faces = vertices[faces]
     vec_cross = np.cross(faces[:, 1, :] - faces[:, 0, :],
                          faces[:, 2, :] - faces[:, 0, :])

@@ -23,6 +23,7 @@ def save_nocs_model_to_file(obj_model_dir):
                      'f42a9784d165ad2f5e723252788c3d6e': np.array([0.117, 0.0, -0.026])}
 
     # CAMERA dataset
+    print('CAMERA dataset')
     for subset in ['train', 'val']:
         camera = {}
         for synsetId in ['02876657', '02880940', '02942699', '02946921', '03642806', '03797390']:
@@ -52,6 +53,7 @@ def save_nocs_model_to_file(obj_model_dir):
         with open(os.path.join(obj_model_dir, 'camera_{}.pkl'.format(subset)), 'wb') as f:
             cPickle.dump(camera, f)
     # Real dataset
+    print('Real dataset')
     for subset in ['real_train', 'real_test']:
         real = {}
         inst_list = glob.glob(os.path.join(obj_model_dir, subset, '*.obj'))
@@ -210,12 +212,15 @@ def save_model_to_hdf5(obj_model_dir, n_points, fps=False, include_distractors=F
 
 
 if __name__ == '__main__':
-    obj_model_dir = '/home/tianmeng/Documents/pose_ws/object-deformnet/data/obj_models'
+    obj_model_dir = '../../data/obj_models'
     # Save ground truth models for training deform network
+    print('save_nocs_model_to_file')
     save_nocs_model_to_file(obj_model_dir)
     # Save models to HDF5 file for training the auto-encoder.
+    print('save_model_to_hdf5: 4096')
     save_model_to_hdf5(obj_model_dir, n_points=4096, fps=False)
     # Save nmodels to HDF5 file, which used to generate mean shape.
+    print('save_model_to_hdf5: 2048')
     save_model_to_hdf5(obj_model_dir, n_points=2048, fps=True)
 
     # import random
