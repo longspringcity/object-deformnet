@@ -35,6 +35,8 @@ def save_nocs_model_to_file(obj_model_dir):
             for instance in tqdm(inst_list):
                 path_to_mesh_model = os.path.join(synset_dir, instance, 'model.obj')
                 model_points = sample_points_from_mesh(path_to_mesh_model, 1024, fps=True, ratio=3)
+                if len(model_points) == 0:
+                    continue
                 # flip z-axis in CAMERA
                 model_points = model_points * np.array([[1.0, 1.0, -1.0]])
                 # re-align mug category

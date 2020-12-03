@@ -36,7 +36,6 @@ def load_obj(path_to_file):
         faces: ndarray, index of triangle vertices
 
     """
-    print(path_to_file)
     vertices = []
     faces = []
     with open(path_to_file, 'r') as f:
@@ -144,6 +143,10 @@ def sample_points_from_mesh(path, n_pts, with_normal=False, fps=False, ratio=2):
 
     """
     vertices, faces = load_obj(path)
+    if len(faces) == 0:
+        print('{:s} instance faces is 0'.format(path))
+        return []
+
     if fps:
         points = uniform_sample(vertices, faces, ratio*n_pts, with_normal)
         pts_idx = farthest_point_sampling(points[:, :3], n_pts)
