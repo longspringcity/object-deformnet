@@ -6,6 +6,7 @@ import numpy as np
 import _pickle as cPickle
 sys.path.append('../lib')
 from utils import sample_points_from_mesh
+from tqdm import tqdm
 
 
 def save_nocs_model_to_file(obj_model_dir):
@@ -29,7 +30,7 @@ def save_nocs_model_to_file(obj_model_dir):
         for synsetId in ['02876657', '02880940', '02942699', '02946921', '03642806', '03797390']:
             synset_dir = os.path.join(obj_model_dir, subset, synsetId)
             inst_list = sorted(os.listdir(synset_dir))
-            for instance in inst_list:
+            for instance in tqdm(inst_list):
                 path_to_mesh_model = os.path.join(synset_dir, instance, 'model.obj')
                 model_points = sample_points_from_mesh(path_to_mesh_model, 1024, fps=True, ratio=3)
                 # flip z-axis in CAMERA
