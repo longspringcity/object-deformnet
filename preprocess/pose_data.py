@@ -376,8 +376,12 @@ def annotate_test_data(data_dir):
 if __name__ == '__main__':
     data_dir = '../../data'
     # create list for all data
+    print('create_img_list')
     create_img_list(data_dir)
     # annotate dataset and re-write valid data to list
+    print('annotate_camera_train')
     annotate_camera_train(data_dir)
+    print('annotate_real_train')
     annotate_real_train(data_dir)
+    print('annotate_test_data')
     annotate_test_data(data_dir)
