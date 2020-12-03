@@ -260,7 +260,7 @@ def annotate_test_data(data_dir):
     #   val        3792 imgs        132 imgs         1856 (23) imgs      50 insts
     #   test       0 img            0 img            0 img               2 insts
 
-    camera_val = open(os.path.join(data_dir, 'CAMERA', 'val_list_all.txt')).read().splitlines()
+    # camera_val = open(os.path.join(data_dir, 'CAMERA', 'val_list_all.txt')).read().splitlines()
     real_test = open(os.path.join(data_dir, 'Real', 'test_list_all.txt')).read().splitlines()
     camera_intrinsics = np.array([[577.5, 0, 319.5], [0, 577.5, 239.5], [0, 0, 1]])
     real_intrinsics = np.array([[591.0125, 0, 322.525], [0, 590.16775, 244.11084], [0, 0, 1]])
@@ -277,7 +277,8 @@ def annotate_test_data(data_dir):
     with open(os.path.join(data_dir, 'obj_models/mug_meta.pkl'), 'rb') as f:
         mug_meta = cPickle.load(f)
 
-    subset_meta = [('CAMERA', camera_val, camera_intrinsics, 'val'), ('Real', real_test, real_intrinsics, 'test')]
+    # subset_meta = [('CAMERA', camera_val, camera_intrinsics, 'val'), ('Real', real_test, real_intrinsics, 'test')]
+    subset_meta = [('Real', real_test, real_intrinsics, 'test')]
     for source, img_list, intrinsics, subset in subset_meta:
         valid_img_list = []
         for img_path in tqdm(img_list):
@@ -380,7 +381,7 @@ if __name__ == '__main__':
     create_img_list(data_dir)
     # annotate dataset and re-write valid data to list
     print('annotate_camera_train')
-    annotate_camera_train(data_dir)
+    # annotate_camera_train(data_dir)
     print('annotate_real_train')
     annotate_real_train(data_dir)
     print('annotate_test_data')
