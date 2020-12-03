@@ -60,9 +60,10 @@ def save_nocs_model_to_file(obj_model_dir):
     # Real dataset
     print('Real dataset')
     for subset in ['real_train', 'real_test']:
+        print(subset)
         real = {}
         inst_list = glob.glob(os.path.join(obj_model_dir, subset, '*.obj'))
-        for inst_path in inst_list:
+        for inst_path in tqdm(inst_list):
             instance = os.path.basename(inst_path).split('.')[0]
             bbox_file = inst_path.replace('.obj', '.txt')
             bbox_dims = np.loadtxt(bbox_file)
