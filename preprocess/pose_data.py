@@ -383,6 +383,6 @@ if __name__ == '__main__':
     print('annotate_camera_train')
     # annotate_camera_train(data_dir)
     print('annotate_real_train')
-    annotate_real_train(data_dir)
+    # annotate_real_train(data_dir)
     print('annotate_test_data')
     annotate_test_data(data_dir)
