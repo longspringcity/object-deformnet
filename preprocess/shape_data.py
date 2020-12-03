@@ -27,6 +27,7 @@ def save_nocs_model_to_file(obj_model_dir):
     print('CAMERA dataset')
     # for subset in ['train', 'val']:
     for subset in ['val']:
+        print(subset)
         camera = {}
         for synsetId in ['02876657', '02880940', '02942699', '02946921', '03642806', '03797390']:
             synset_dir = os.path.join(obj_model_dir, subset, synsetId)
