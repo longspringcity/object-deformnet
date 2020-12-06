@@ -113,10 +113,11 @@ def save_model_to_hdf5(obj_model_dir, n_points, fps=False, include_distractors=F
     val_count = 0
     # CAMERA
     for subset in ['train', 'val']:
+        print(subset)
         for catId in range(1, 7):
             synset_dir = os.path.join(obj_model_dir, subset, catId_to_synsetId[catId])
             inst_list = sorted(os.listdir(synset_dir))
-            for instance in inst_list:
+            for instance in tqdm(inst_list):
                 path_to_mesh_model = os.path.join(synset_dir, instance, 'model.obj')
                 if instance == 'b9be7cfe653740eb7633a2dd89cec754':
                     continue
@@ -154,8 +155,9 @@ def save_model_to_hdf5(obj_model_dir, n_points, fps=False, include_distractors=F
                         val_count += 1
     # Real
     for subset in ['real_train', 'real_test']:
+        print(subset)
         path_to_mesh_models = glob.glob(os.path.join(obj_model_dir, subset, '*.obj'))
-        for inst_path in sorted(path_to_mesh_models):
+        for inst_path in tqdm(sorted(path_to_mesh_models)):
             instance = os.path.basename(inst_path).split('.')[0]
             if instance.startswith('bottle'):
                 catId = 1
