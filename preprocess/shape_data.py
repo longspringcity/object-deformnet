@@ -123,6 +123,9 @@ def save_model_to_hdf5(obj_model_dir, n_points, fps=False, include_distractors=F
                     continue
                 model_points = sample_points_from_mesh(path_to_mesh_model, n_points, with_normal, fps=fps, ratio=2)
                 model_points = model_points * np.array([[1.0, 1.0, -1.0]])
+                if instance not in mug_meta:
+                    print(instance)
+                    continue
                 if catId == 6:
                     shift = mug_meta[instance][0]
                     scale = mug_meta[instance][1]
