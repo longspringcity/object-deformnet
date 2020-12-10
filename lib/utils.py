@@ -143,10 +143,6 @@ def sample_points_from_mesh(path, n_pts, with_normal=False, fps=False, ratio=2):
 
     """
     vertices, faces = load_obj(path)
-    print(vertices)
-    print(len(vertices))
-    print(faces)
-    print(len(faces))
 
     if fps:
         points = uniform_sample(vertices, faces, ratio*n_pts, with_normal)
