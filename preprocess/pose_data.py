@@ -277,8 +277,7 @@ def annotate_test_data(data_dir):
     with open(os.path.join(data_dir, 'obj_models/mug_meta.pkl'), 'rb') as f:
         mug_meta = cPickle.load(f)
 
-    # subset_meta = [('CAMERA', camera_val, camera_intrinsics, 'val'), ('Real', real_test, real_intrinsics, 'test')]
-    subset_meta = [('Real', real_test, real_intrinsics, 'test')]
+    subset_meta = [('CAMERA', camera_val, camera_intrinsics, 'val'), ('Real', real_test, real_intrinsics, 'test')]
     for source, img_list, intrinsics, subset in subset_meta:
         valid_img_list = []
         for img_path in tqdm(img_list):
@@ -381,8 +380,8 @@ if __name__ == '__main__':
     create_img_list(data_dir)
     # annotate dataset and re-write valid data to list
     print('annotate_camera_train')
-    # annotate_camera_train(data_dir)
+    annotate_camera_train(data_dir)
     print('annotate_real_train')
-    # annotate_real_train(data_dir)
+    annotate_real_train(data_dir)
     print('annotate_test_data')
     annotate_test_data(data_dir)
