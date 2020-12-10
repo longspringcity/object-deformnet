@@ -28,8 +28,7 @@ def save_nocs_model_to_file(obj_model_dir):
     for subset in ['train', 'val']:
         print(subset)
         camera = {}
-        # for synsetId in ['02876657', '02880940', '02942699', '02946921', '03642806', '03797390']:
-        for synsetId in ['03797390']:
+        for synsetId in ['02876657', '02880940', '02942699', '02946921', '03642806', '03797390']:
             synset_dir = os.path.join(obj_model_dir, subset, synsetId)
             inst_list = sorted(os.listdir(synset_dir))
             for instance in tqdm(inst_list):
