@@ -25,7 +25,8 @@ def save_nocs_model_to_file(obj_model_dir):
 
     # CAMERA dataset
     print('CAMERA dataset')
-    for subset in ['train', 'val']:
+    # for subset in ['train', 'val']:
+    for subset in ['val']:
         print(subset)
         camera = {}
         for synsetId in ['02876657', '02880940', '02942699', '02946921', '03642806', '03797390']:
@@ -33,7 +34,7 @@ def save_nocs_model_to_file(obj_model_dir):
             inst_list = sorted(os.listdir(synset_dir))
             for instance in tqdm(inst_list):
                 path_to_mesh_model = os.path.join(synset_dir, instance, 'model.obj')
-                # print(path_to_mesh_model)
+                print(path_to_mesh_model)
                 model_points = sample_points_from_mesh(path_to_mesh_model, 1024, fps=True, ratio=3)
                 # flip z-axis in CAMERA
                 model_points = model_points * np.array([[1.0, 1.0, -1.0]])
