@@ -221,8 +221,8 @@ def save_model_to_hdf5(obj_model_dir, n_points, fps=False, include_distractors=F
 if __name__ == '__main__':
     obj_model_dir = '../../data/obj_models'
     # Save ground truth models for training deform network
-    # print('save_nocs_model_to_file')
-    # save_nocs_model_to_file(obj_model_dir)
+    print('save_nocs_model_to_file')
+    save_nocs_model_to_file(obj_model_dir)
     # Save models to HDF5 file for training the auto-encoder.
     print('save_model_to_hdf5: 4096')
     save_model_to_hdf5(obj_model_dir, n_points=4096, fps=False)
