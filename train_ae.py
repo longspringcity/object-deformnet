@@ -12,7 +12,7 @@ from lib.utils import setup_logger
 parser = argparse.ArgumentParser()
 parser.add_argument('--num_point', type=int, default=1024, help='number of points, needed if use points')
 parser.add_argument('--emb_dim', type=int, default=512, help='dimension of latent embedding [default: 512]')
-parser.add_argument('--h5_file', type=str, default='data/obj_models/ShapeNetCore_4096.h5', help='h5 file')
+parser.add_argument('--h5_file', type=str, default='../data/obj_models/ShapeNetCore_4096.h5', help='h5 file')
 parser.add_argument('--batch_size', type=int, default=32, help='batch size')
 parser.add_argument('--num_workers', type=int, default=10, help='number of data loading workers')
 parser.add_argument('--gpu', type=str, default='0', help='GPU to use')
