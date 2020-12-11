@@ -260,7 +260,7 @@ def annotate_test_data(data_dir):
     #   val        3792 imgs        132 imgs         1856 (23) imgs      50 insts
     #   test       0 img            0 img            0 img               2 insts
 
-    # camera_val = open(os.path.join(data_dir, 'CAMERA', 'val_list_all.txt')).read().splitlines()
+    camera_val = open(os.path.join(data_dir, 'CAMERA', 'val_list_all.txt')).read().splitlines()
     real_test = open(os.path.join(data_dir, 'Real', 'test_list_all.txt')).read().splitlines()
     camera_intrinsics = np.array([[577.5, 0, 319.5], [0, 577.5, 239.5], [0, 0, 1]])
     real_intrinsics = np.array([[591.0125, 0, 322.525], [0, 590.16775, 244.11084], [0, 0, 1]])
@@ -376,12 +376,12 @@ def annotate_test_data(data_dir):
 if __name__ == '__main__':
     data_dir = '../../data'
     # create list for all data
-    print('create_img_list')
-    create_img_list(data_dir)
+    # print('create_img_list')
+    # create_img_list(data_dir)
     # annotate dataset and re-write valid data to list
-    print('annotate_camera_train')
-    annotate_camera_train(data_dir)
-    print('annotate_real_train')
-    annotate_real_train(data_dir)
+    # print('annotate_camera_train')
+    # annotate_camera_train(data_dir)
+    # print('annotate_real_train')
+    # annotate_real_train(data_dir)
     print('annotate_test_data')
     annotate_test_data(data_dir)
