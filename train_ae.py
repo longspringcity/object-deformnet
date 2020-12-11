@@ -16,7 +16,7 @@ parser.add_argument('--h5_file', type=str, default='data/obj_models/ShapeNetCore
 parser.add_argument('--batch_size', type=int, default=32, help='batch size')
 parser.add_argument('--num_workers', type=int, default=10, help='number of data loading workers')
 parser.add_argument('--gpu', type=str, default='0', help='GPU to use')
-parser.add_argument('--lr', type=float, default=0.0001, help='initial learning rate')
+parser.add_argument('--lr', type=float, default=1e-4, help='initial learning rate')
 parser.add_argument('--start_epoch', type=int, default=1, help='which epoch to start')
 parser.add_argument('--max_epoch', type=int, default=50, help='max number of epochs to train')
 parser.add_argument('--resume_model', type=str, default='', help='resume from saved model')
