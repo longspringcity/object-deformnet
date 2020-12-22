@@ -217,7 +217,14 @@ def save_model_to_hdf5(obj_model_dir, n_points, fps=False, include_distractors=F
 
 
 if __name__ == '__main__':
-    obj_model_dir = '../../data/obj_models'
+    # os = 'Linux'
+    os_type = 'Windows'
+    assert os_type in ['Linux', 'Windows']
+    print('os: ', os_type)
+    if os_type is 'Linux':
+        obj_model_dir = '../../data/obj_models'
+    if os_type is 'Windows':
+        obj_model_dir = 'D:/NOCS_Project/data/obj_models'
     # Save ground truth models for training deform network
     print('save_nocs_model_to_file')
     save_nocs_model_to_file(obj_model_dir)

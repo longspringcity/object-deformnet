@@ -9,6 +9,11 @@ sys.path.append('../lib')
 from align import align_nocs_to_depth
 from utils import load_depth
 
+# os = 'Linux'
+os_type = 'Windows'
+assert os_type in ['Linux', 'Windows']
+print('os: ', os_type)
+
 
 def create_img_list(data_dir):
     """ Create train/val/test data list for CAMERA and Real. """
@@ -297,11 +302,19 @@ def annotate_test_data(data_dir):
             # match each instance with NOCS ground truth to properly assign gt_handle_visibility
             nocs_dir = os.path.join(os.path.dirname(data_dir), 'results/nocs_results')
             if source == 'CAMERA':
-                nocs_path = os.path.join(nocs_dir, 'val', 'results_val_{}_{}.pkl'.format(
-                    img_path.split('/')[-2], img_path.split('/')[-1]))
+                if os_type is 'Windows':
+                    nocs_path = os.path.join(nocs_dir, 'val', 'results_val_{}_{}.pkl'.format(
+                        img_path.split('\\')[-2], img_path.split('\\')[-1]))
+                if os_type is 'Linux':
+                    nocs_path = os.path.join(nocs_dir, 'val', 'results_val_{}_{}.pkl'.format(
+                        img_path.split('/')[-2], img_path.split('/')[-1]))
             else:
-                nocs_path = os.path.join(nocs_dir, 'real_test', 'results_test_{}_{}.pkl'.format(
-                    img_path.split('/')[-2], img_path.split('/')[-1]))
+                if os_type is 'Windows':
+                    nocs_path = os.path.join(nocs_dir, 'real_test', 'results_test_{}_{}.pkl'.format(
+                        img_path.split('\\')[-2], img_path.split('\\')[-1]))
+                if os_type is 'Linux':
+                    nocs_path = os.path.join(nocs_dir, 'real_test', 'results_test_{}_{}.pkl'.format(
+                        img_path.split('/')[-2], img_path.split('/')[-1]))
             with open(nocs_path, 'rb') as f:
                 nocs = cPickle.load(f)
             gt_class_ids = nocs['gt_class_ids']
@@ -374,7 +387,10 @@ def annotate_test_data(data_dir):
 
 
 if __name__ == '__main__':
-    data_dir = '../../data'
+    if os_type is 'Linux':
+        data_dir = '../../data'
+    if os_type is 'Windows':
+        data_dir = 'D:/NOCS_Project/data'
     # create list for all data
     print('create_img_list')
     create_img_list(data_dir)
