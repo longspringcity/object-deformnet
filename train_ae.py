@@ -2,7 +2,7 @@ import os
 import time
 import argparse
 import torch
-# import tensorflow as tf
+import tensorflow as tf
 from lib.auto_encoder import PointCloudAE
 from lib.loss import ChamferLoss
 from data.shape_dataset import ShapeDataset
@@ -33,7 +33,7 @@ def train_net():
     # set result directory
     if not os.path.exists(opt.result_dir):
         os.makedirs(opt.result_dir)
-    # tb_writer = tf.summary.FileWriter(opt.result_dir)
+    tb_writer = tf.summary.FileWriter(opt.result_dir)
     logger = setup_logger('train_log', os.path.join(opt.result_dir, 'log.txt'))
     for key, value in vars(opt).items():
         logger.info(key + ': ' + str(value))
@@ -75,15 +75,15 @@ def train_net():
                 optimizer.zero_grad()
                 embedding, point_cloud = estimator(batch_xyz)
                 loss, _, _ = criterion(point_cloud, batch_xyz)
-                # summary = tf.Summary(value=[tf.Summary.Value(tag='learning_rate', simple_value=current_lr),
-                #                             tf.Summary.Value(tag='train_loss', simple_value=loss)])
+                summary = tf.Summary(value=[tf.Summary.Value(tag='learning_rate', simple_value=current_lr),
+                                            tf.Summary.Value(tag='train_loss', simple_value=loss)])
                 # backward
                 loss.backward()
                 optimizer.step()
                 global_step += 1
                 batch_idx += 1
                 # write results to tensorboard
-                # tb_writer.add_summary(summary, global_step)
+                tb_writer.add_summary(summary, global_step)
                 if batch_idx % 10 == 0:
                     logger.info('Batch {0} Loss:{1:f}'.format(batch_idx, loss))
         logger.info('>>>>>>>>----------Epoch {:02d} train finish---------<<<<<<<<'.format(epoch))
@@ -100,8 +100,8 @@ def train_net():
             val_loss += loss.item()
             logger.info('Batch {0} Loss:{1:f}'.format(i, loss))
         val_loss = val_loss / i
-        # summary = tf.Summary(value=[tf.Summary.Value(tag='val_loss', simple_value=val_loss)])
-        # tb_writer.add_summary(summary, global_step)
+        summary = tf.Summary(value=[tf.Summary.Value(tag='val_loss', simple_value=val_loss)])
+        tb_writer.add_summary(summary, global_step)
         logger.info('Epoch {0:02d} test average loss: {1:06f}'.format(epoch, val_loss))
         logger.info('>>>>>>>>----------Epoch {:02d} test finish---------<<<<<<<<'.format(epoch))
         # save model after each epoch
