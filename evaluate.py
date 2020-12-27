@@ -16,13 +16,13 @@ from lib.utils import load_depth, get_bbox, compute_mAP, plot_mAP
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--data', type=str, default='val', help='val, real_test')
-parser.add_argument('--data_dir', type=str, default='data', help='data directory')
+parser.add_argument('--data_dir', type=str, default='../data', help='data directory')
 parser.add_argument('--n_cat', type=int, default=6, help='number of object categories')
 parser.add_argument('--nv_prior', type=int, default=1024, help='number of vertices in shape priors')
 parser.add_argument('--model', type=str, default='results/camera/model_50.pth', help='resume from saved model')
 parser.add_argument('--n_pts', type=int, default=1024, help='number of foreground points')
 parser.add_argument('--img_size', type=int, default=192, help='cropped image size')
-parser.add_argument('--gpu', type=str, default='1', help='GPU to use')
+parser.add_argument('--gpu', type=str, default='0', help='GPU to use')
 opt = parser.parse_args()
 
 mean_shapes = np.load('assets/mean_points_emb.npy')
@@ -71,7 +71,7 @@ def detect():
         raw_rgb = raw_rgb[:, :, ::-1]
         raw_depth = load_depth(img_path)
         # load mask-rcnn detection results
-        img_path_parsing = img_path.split('/')
+        img_path_parsing = img_path.split('\\')
         mrcnn_path = os.path.join('results/mrcnn_results', opt.data, 'results_{}_{}_{}.pkl'.format(
             opt.data.split('_')[-1], img_path_parsing[-2], img_path_parsing[-1]))
         with open(mrcnn_path, 'rb') as f:
