@@ -75,8 +75,8 @@ def detect():
         raw_coord = np.array(raw_coord, dtype=np.float32) / 255
         raw_coord[:, :, 2] = 1 - raw_coord[:, :, 2]
         # load mask-rcnn detection results
-        img_path_parsing = img_path.split('\\')
-        mrcnn_path = os.path.join('D:/NOCS_Project/results/mrcnn_results', opt.data, 'results_{}_{}_{}.pkl'.format(
+        img_path_parsing = img_path.split('/')
+        mrcnn_path = os.path.join('../results/mrcnn_results', opt.data, 'results_{}_{}_{}.pkl'.format(
             opt.data.split('_')[-1], img_path_parsing[-2], img_path_parsing[-1]))
         with open(mrcnn_path, 'rb') as f:
             mrcnn_result = cPickle.load(f)
