@@ -12,11 +12,12 @@ import torchvision.transforms as transforms
 from lib.network import DeformNet
 from lib.align import estimateSimilarityTransform
 from lib.utils import load_depth, get_bbox, compute_mAP, plot_mAP
+import open3d as o3d
 
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--data', type=str, default='val', help='val, real_test')
-parser.add_argument('--data_dir', type=str, default='../data', help='data directory')
+parser.add_argument('--data_dir', type=str, default='D:/NOCS_Project/data', help='data directory')
 parser.add_argument('--n_cat', type=int, default=6, help='number of object categories')
 parser.add_argument('--nv_prior', type=int, default=1024, help='number of vertices in shape priors')
 parser.add_argument('--model', type=str, default='results/camera/model_50.pth', help='resume from saved model')
@@ -47,7 +48,7 @@ norm_color = transforms.Compose(
     [transforms.ToTensor(),
      transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])]
 )
-
+camera_intrinsics = [[577.5, 0, 319.5], [0, 577.5, 239.5], [0, 0, 1]]
 
 def detect():
     # resume model
@@ -70,9 +71,13 @@ def detect():
         raw_rgb = cv2.imread(img_path + '_color.png')[:, :, :3]
         raw_rgb = raw_rgb[:, :, ::-1]
         raw_depth = load_depth(img_path)
+        raw_coord = cv2.imread(img_path + '_coord.png')[:, :, :3]
+        raw_coord = raw_coord[:, :, (2, 1, 0)]
+        raw_coord = np.array(raw_coord, dtype=np.float32) / 255
+        raw_coord[:, :, 2] = 1 - raw_coord[:, :, 2]
         # load mask-rcnn detection results
-        img_path_parsing = img_path.split('/')
-        mrcnn_path = os.path.join('../results/mrcnn_results', opt.data, 'results_{}_{}_{}.pkl'.format(
+        img_path_parsing = img_path.split('\\')
+        mrcnn_path = os.path.join('D:/NOCS_Project/results/mrcnn_results', opt.data, 'results_{}_{}_{}.pkl'.format(
             opt.data.split('_')[-1], img_path_parsing[-2], img_path_parsing[-1]))
         with open(mrcnn_path, 'rb') as f:
             mrcnn_result = cPickle.load(f)
@@ -80,7 +85,7 @@ def detect():
         f_sRT = np.zeros((num_insts, 4, 4), dtype=float)
         f_size = np.zeros((num_insts, 3), dtype=float)
         # prepare frame data
-        f_points, f_rgb, f_choose, f_catId, f_prior = [], [], [], [], []
+        f_points, f_nocs, f_rgb, f_choose, f_catId, f_prior = [], [], [], [], [], []
         valid_inst = []
         for i in range(num_insts):
             cat_id = mrcnn_result['class_ids'][i] - 1
@@ -109,10 +114,13 @@ def detect():
             depth_masked = raw_depth[rmin:rmax, cmin:cmax].flatten()[choose][:, np.newaxis]
             xmap_masked = xmap[rmin:rmax, cmin:cmax].flatten()[choose][:, np.newaxis]
             ymap_masked = ymap[rmin:rmax, cmin:cmax].flatten()[choose][:, np.newaxis]
+            image_points = np.array(list(zip(xmap_masked, ymap_masked)), dtype=np.float)
             pt2 = depth_masked / norm_scale
             pt0 = (xmap_masked - cam_cx) * pt2 / cam_fx
             pt1 = (ymap_masked - cam_cy) * pt2 / cam_fy
             points = np.concatenate((pt0, pt1, pt2), axis=1)
+            nocs = raw_coord[rmin:rmax, cmin:cmax, :].reshape((-1, 3))[choose, :] - 0.5
+            camera_metrix = np.array(camera_intrinsics)
             rgb = raw_rgb[rmin:rmax, cmin:cmax, :]
             rgb = cv2.resize(rgb, (opt.img_size, opt.img_size), interpolation=cv2.INTER_LINEAR)
             rgb = norm_color(rgb)
@@ -123,12 +131,14 @@ def detect():
             choose = (np.floor(row_idx * ratio) * opt.img_size + np.floor(col_idx * ratio)).astype(np.int64)
             # concatenate instances
             f_points.append(points)
+            f_nocs.append(nocs)
             f_rgb.append(rgb)
             f_choose.append(choose)
             f_catId.append(cat_id)
             f_prior.append(prior)
         if len(valid_inst):
             f_points = torch.cuda.FloatTensor(f_points)
+            f_nocs = torch.cuda.FloatTensor(f_nocs)
             f_rgb = torch.stack(f_rgb, dim=0).cuda()
             f_choose = torch.cuda.LongTensor(f_choose)
             f_catId = torch.cuda.LongTensor(f_catId)
@@ -136,26 +146,37 @@ def detect():
             # inference
             torch.cuda.synchronize()
             t_now = time.time()
-            assign_mat, deltas = estimator(f_points, f_rgb, f_choose, f_catId, f_prior)
+            # assign_mat, deltas = estimator(f_points, f_rgb, f_choose, f_catId, f_prior)
             # assign_mat, deltas = estimator(f_rgb, f_choose, f_catId, f_prior)
-            inst_shape = f_prior + deltas
-            assign_mat = F.softmax(assign_mat, dim=2)
-            f_coords = torch.bmm(assign_mat, inst_shape)  # bs x n_pts x 3
+            # inst_shape = f_prior + deltas
+            # assign_mat = F.softmax(assign_mat, dim=2)
+            # f_coords = torch.bmm(assign_mat, inst_shape)  # bs x n_pts x 3
             torch.cuda.synchronize()
             t_inference += (time.time() - t_now)
-            f_coords = f_coords.detach().cpu().numpy()
+            # f_coords = f_coords.detach().cpu().numpy()
             f_points = f_points.cpu().numpy()
             f_choose = f_choose.cpu().numpy()
-            f_insts = inst_shape.detach().cpu().numpy()
+            # f_insts = inst_shape.detach().cpu().numpy()
             t_now = time.time()
             for i in range(len(valid_inst)):
                 inst_idx = valid_inst[i]
                 choose = f_choose[i]
                 _, choose = np.unique(choose, return_index=True)
-                nocs_coords = f_coords[i, choose, :]
-                f_size[inst_idx] = 2 * np.amax(np.abs(f_insts[i]), axis=0)
+                # nocs_coords = f_coords[i, choose, :]
+                f_size[inst_idx] = 2 * np.amax(np.abs(f_nocs[i].cpu()), axis=0)
+                # f_size[inst_idx] = 2 * np.amax(np.abs(f_insts[i]), axis=0)
                 points = f_points[i, choose, :]
-                _, _, _, pred_sRT = estimateSimilarityTransform(nocs_coords, points)
+                point_cloud = o3d.PointCloud()
+                point_cloud.points = o3d.Vector3dVector(f_nocs[i])
+                o3d.draw_geometries([point_cloud])
+                # _, _, _, pred_sRT = estimateSimilarityTransform(nocs_coords, points)
+                _, R_vector, T_vector, inliers = cv2.solvePnPRansac(nocs, image_points, camera_metrix, None)
+                R_matrix = cv2.Rodrigues(R_vector, jacobian=0)[0]
+                T_vector = np.squeeze(T_vector, axis=1)
+                PnP_RT = np.identity(4, dtype=np.float32)
+                PnP_RT[:3, :3] = R_matrix
+                PnP_RT[:3, 3] = T_vector
+                pred_sRT = PnP_RT
                 if pred_sRT is None:
                     pred_sRT = np.identity(4, dtype=float)
                 f_sRT[inst_idx] = pred_sRT
@@ -180,11 +201,11 @@ def detect():
         result['pred_scales'] = f_size
 
         image_short_path = '_'.join(img_path_parsing[-3:])
-        save_path = os.path.join(result_dir, 'results_{}.pkl'.format(image_short_path))
+        save_path = os.path.join(result_dir, 'nocs_results_{}.pkl'.format(image_short_path))
         with open(save_path, 'wb') as f:
             cPickle.dump(result, f)
     # write statistics
-    fw = open('{0}/eval_logs.txt'.format(result_dir), 'w')
+    fw = open('{0}/nocs_eval_logs.txt'.format(result_dir), 'w')
     messages = []
     messages.append("Total images: {}".format(len(img_list)))
     messages.append("Valid images: {},  Total instances: {},  Average: {:.2f}/image".format(
@@ -225,7 +246,7 @@ def evaluate():
     iou_aps, pose_aps, iou_acc, pose_acc = compute_mAP(pred_results, result_dir, degree_thres_list, shift_thres_list,
                                                        iou_thres_list, iou_pose_thres=0.1, use_matches_for_pose=True)
     # metric
-    fw = open('{0}/eval_logs.txt'.format(result_dir), 'a')
+    fw = open('{0}/nocs_eval_logs.txt'.format(result_dir), 'a')
     iou_25_idx = iou_thres_list.index(0.25)
     iou_50_idx = iou_thres_list.index(0.5)
     iou_75_idx = iou_thres_list.index(0.75)
@@ -255,7 +276,7 @@ def evaluate():
         fw.write(msg + '\n')
     fw.close()
     # load NOCS results
-    pkl_path = os.path.join('../results/nocs_results', opt.data, 'mAP_Acc.pkl')
+    pkl_path = os.path.join('results/nocs_results', opt.data, 'mAP_Acc.pkl')
     with open(pkl_path, 'rb') as f:
         nocs_results = cPickle.load(f)
     nocs_iou_aps = nocs_results['iou_aps'][-1, :]
@@ -268,6 +289,6 @@ def evaluate():
 
 if __name__ == '__main__':
     print('Detecting ...')
-    # detect()
+    detect()
     print('Evaluating ...')
     evaluate()
