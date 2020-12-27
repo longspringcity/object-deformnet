@@ -162,8 +162,8 @@ def detect():
                 choose = f_choose[i]
                 _, choose = np.unique(choose, return_index=True)
                 # nocs_coords = f_coords[i, choose, :]
-                print(f_nocs[i].cpu())
-                f_size[inst_idx] = 2 * np.amax(np.abs(f_nocs[i].cpu()), axis=0)
+                # print(f_nocs[i].cpu().numpy())
+                f_size[inst_idx] = 2 * np.amax(np.abs(f_nocs[i].cpu().numpy()), axis=0)
                 # f_size[inst_idx] = 2 * np.amax(np.abs(f_insts[i]), axis=0)
                 points = f_points[i, choose, :]
                 # _, _, _, pred_sRT = estimateSimilarityTransform(nocs_coords, points)
