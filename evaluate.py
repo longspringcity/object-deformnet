@@ -153,8 +153,6 @@ def detect():
                 choose = f_choose[i]
                 _, choose = np.unique(choose, return_index=True)
                 nocs_coords = f_coords[i, choose, :]
-                print(2 * np.amax(np.abs(f_insts[i]), axis=0))
-                exit()
                 f_size[inst_idx] = 2 * np.amax(np.abs(f_insts[i]), axis=0)
                 points = f_points[i, choose, :]
                 _, _, _, pred_sRT = estimateSimilarityTransform(nocs_coords, points)
@@ -180,6 +178,10 @@ def detect():
         result['pred_scores'] = mrcnn_result['scores']
         result['pred_RTs'] = f_sRT
         result['pred_scales'] = f_size
+
+        print(result['gt_scales'])
+        print(result['pred_scales'])
+        exit()
 
         image_short_path = '_'.join(img_path_parsing[-3:])
         save_path = os.path.join(result_dir, 'results_{}.pkl'.format(image_short_path))
