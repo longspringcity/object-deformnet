@@ -12,7 +12,6 @@ import torchvision.transforms as transforms
 from lib.network import DeformNet
 from lib.align import estimateSimilarityTransform
 from lib.utils import load_depth, get_bbox, compute_mAP, plot_mAP
-import open3d as o3d
 
 
 parser = argparse.ArgumentParser()
@@ -166,9 +165,6 @@ def detect():
                 f_size[inst_idx] = 2 * np.amax(np.abs(f_nocs[i].cpu()), axis=0)
                 # f_size[inst_idx] = 2 * np.amax(np.abs(f_insts[i]), axis=0)
                 points = f_points[i, choose, :]
-                point_cloud = o3d.PointCloud()
-                point_cloud.points = o3d.Vector3dVector(f_nocs[i])
-                o3d.draw_geometries([point_cloud])
                 # _, _, _, pred_sRT = estimateSimilarityTransform(nocs_coords, points)
                 _, R_vector, T_vector, inliers = cv2.solvePnPRansac(nocs, image_points, camera_metrix, None)
                 R_matrix = cv2.Rodrigues(R_vector, jacobian=0)[0]
