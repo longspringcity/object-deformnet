@@ -154,6 +154,7 @@ def detect():
                 _, choose = np.unique(choose, return_index=True)
                 nocs_coords = f_coords[i, choose, :]
                 print(f_insts[i])
+                exit()
                 f_size[inst_idx] = 2 * np.amax(np.abs(f_insts[i]), axis=0)
                 points = f_points[i, choose, :]
                 _, _, _, pred_sRT = estimateSimilarityTransform(nocs_coords, points)
@@ -269,6 +270,6 @@ def evaluate():
 
 if __name__ == '__main__':
     print('Detecting ...')
-    # detect()
+    detect()
     print('Evaluating ...')
     evaluate()
