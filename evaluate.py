@@ -153,7 +153,7 @@ def detect():
                 choose = f_choose[i]
                 _, choose = np.unique(choose, return_index=True)
                 nocs_coords = f_coords[i, choose, :]
-                print(f_insts[i])
+                print(2 * np.amax(np.abs(f_insts[i]), axis=0))
                 exit()
                 f_size[inst_idx] = 2 * np.amax(np.abs(f_insts[i]), axis=0)
                 points = f_points[i, choose, :]
