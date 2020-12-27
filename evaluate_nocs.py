@@ -221,7 +221,7 @@ def evaluate():
     shift_thres_list = [i / 2 for i in range(21)]
     iou_thres_list = [i / 100 for i in range(101)]
     # predictions
-    result_pkl_list = glob.glob(os.path.join(result_dir, 'results_*.pkl'))
+    result_pkl_list = glob.glob(os.path.join(result_dir, 'nocs_results_*.pkl'))
     result_pkl_list = sorted(result_pkl_list)
     assert len(result_pkl_list)
     pred_results = []
