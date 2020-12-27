@@ -71,7 +71,7 @@ def detect():
         raw_rgb = raw_rgb[:, :, ::-1]
         raw_depth = load_depth(img_path)
         # load mask-rcnn detection results
-        img_path_parsing = img_path.split('\\')
+        img_path_parsing = img_path.split('/')
         mrcnn_path = os.path.join('results/mrcnn_results', opt.data, 'results_{}_{}_{}.pkl'.format(
             opt.data.split('_')[-1], img_path_parsing[-2], img_path_parsing[-1]))
         with open(mrcnn_path, 'rb') as f:
